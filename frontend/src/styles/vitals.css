@@ -1,0 +1,2075 @@
+/* ==========================================================================
+   Vitals Design System — NeuroDeck
+   Modeled after vitalsmac.com: Obsidian dark, pill tabs, glowing sparklines,
+   segmented bars, and dual-column master-detail layout.
+   ========================================================================== */
+
+:root {
+  --v-bg: #121214;
+  --v-card: #18191c;
+  --v-card-hover: #1f2025;
+  --v-card-active: #23242a;
+  --v-card-hi: #272830;
+  --v-raised: #2a2b34;
+  
+  --v-border: rgba(255, 255, 255, 0.07);
+  --v-border-hover: rgba(255, 255, 255, 0.14);
+  --v-border-active: rgba(255, 255, 255, 0.22);
+  
+  --v-ink: #f3f4f6;
+  --v-ink-2: #9898a4;
+  --v-ink-3: #60606c;
+  --v-ink-muted: #43434c;
+
+  /* Semantic palette */
+  --v-cyan: #06b6d4;      /* Ollama */
+  --v-purple: #a855f7;    /* Codex */
+  --v-amber: #f59e0b;     /* Antigravity */
+  --v-pink: #ec4899;      /* GPU */
+  --v-green: #22c55e;     /* Host Memory / Health */
+  --v-blue: #3b82f6;      /* Global Token Volume */
+  --v-orange: #f97316;    /* Alerts & Warnings */
+  --v-red: #ef4444;
+
+  --v-font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --v-font-mono: ui-monospace, "SF Mono", "JetBrains Mono", "Cascadia Code", Menlo, Consolas, monospace;
+}
+
+html, body {
+  background-color: var(--v-bg);
+  color: var(--v-ink);
+  margin: 0;
+  padding: 0;
+}
+
+/* Base resets & typography */
+.vitals-app {
+  min-height: 100vh;
+  background-color: var(--v-bg);
+  color: var(--v-ink);
+  font-family: var(--v-font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  display: flex;
+  flex-direction: column;
+  overflow-x: hidden;
+}
+
+/* ==========================================================================
+   Window Header & Navigation Bar
+   ========================================================================== */
+.vitals-header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  height: 56px;
+  padding: 0 18px;
+  background: rgba(18, 18, 20, 0.85);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--v-border);
+}
+
+.vitals-header-left {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-width: 0;
+}
+
+.brand-meta {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  white-space: nowrap;
+}
+
+.brand-title {
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--v-ink);
+}
+
+.brand-subtitle {
+  font-size: 11.5px;
+  font-weight: 500;
+  color: var(--v-ink-3);
+}
+
+/* Center Pill Segmented Tabs (with Smooth Sliding Capsule Indicator) */
+.vitals-tabs {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  padding: 3px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 999px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.vitals-tabs::-webkit-scrollbar {
+  display: none;
+}
+
+.vitals-tab-indicator {
+  position: absolute;
+  top: 3px;
+  bottom: 3px;
+  left: 0;
+  height: calc(100% - 6px);
+  background: var(--v-card-hi);
+  border-radius: 999px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.4), inset 0 0 0 1px rgba(255, 255, 255, 0.12);
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), width 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.vitals-tab {
+  position: relative;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 13px;
+  border-radius: 999px;
+  border: 0;
+  background: transparent;
+  color: var(--v-ink-2);
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: color 0.15s ease;
+}
+
+.vitals-tab svg {
+  width: 14px;
+  height: 14px;
+  opacity: 0.75;
+  transition: opacity 0.15s ease;
+}
+
+.vitals-tab:hover {
+  color: var(--v-ink);
+}
+
+.vitals-tab:hover svg {
+  opacity: 0.95;
+}
+
+.vitals-tab.is-active {
+  color: var(--v-ink);
+  font-weight: 600;
+}
+
+.vitals-tab.is-active svg {
+  opacity: 1;
+}
+
+/* Header Right Controls */
+.vitals-header-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.clock-display {
+  font-family: var(--v-font-mono);
+  font-size: 11.5px;
+  color: var(--v-ink-2);
+  tabular-nums: true;
+}
+
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 9px;
+  border-radius: 999px;
+  background: rgba(34, 197, 94, 0.1);
+  border: 1px solid rgba(34, 197, 94, 0.25);
+  color: #4ade80;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.status-badge-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #22c55e;
+  box-shadow: 0 0 6px #22c55e;
+}
+
+.range-picker {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 2px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 7px;
+}
+
+.range-btn {
+  padding: 3px 8px;
+  border-radius: 5px;
+  border: 0;
+  background: transparent;
+  color: var(--v-ink-2);
+  font-size: 11px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.range-btn:hover {
+  color: var(--v-ink);
+}
+
+.range-btn.is-active {
+  background: var(--v-card-hi);
+  color: var(--v-ink);
+  font-weight: 600;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.25);
+}
+
+.lang-btn {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 10px;
+  border-radius: 7px;
+  border: 1px solid var(--v-border);
+  background: transparent;
+  color: var(--v-ink-2);
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.lang-btn:hover {
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--v-ink);
+}
+
+/* ==========================================================================
+   Master-Detail Dual Column Layout
+   ========================================================================== */
+.vitals-main {
+  flex: 1 1 auto;
+  max-width: 1680px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 18px 20px 32px;
+}
+
+.vitals-master-detail {
+  display: grid;
+  grid-template-columns: minmax(0, 1.25fr) minmax(380px, 0.95fr);
+  gap: 20px;
+  align-items: start;
+}
+
+/* ==========================================================================
+   Left Column: Metric Cards Matrix & Feed
+   ========================================================================== */
+.vitals-left-col {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  min-width: 0;
+}
+
+.vitals-grid-6 {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+/* Individual Metric Card */
+.vitals-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 16px 18px;
+  background: var(--v-card);
+  border: 1px solid var(--v-border);
+  border-radius: 14px;
+  cursor: pointer;
+  text-align: left;
+  user-select: none;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  overflow: hidden;
+}
+
+.vitals-card:hover {
+  background: var(--v-card-hover);
+  border-color: var(--v-border-hover);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+}
+
+.vitals-card.is-selected {
+  background: var(--v-card-active);
+  border-color: var(--card-tint, var(--v-cyan));
+  box-shadow: 0 0 0 1px var(--card-tint, var(--v-cyan)), 0 6px 20px rgba(0, 0, 0, 0.35);
+}
+
+.vitals-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+
+.vitals-card-badge {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 11.5px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.vitals-card-badge svg {
+  width: 14px;
+  height: 14px;
+}
+
+.vitals-card-chevron {
+  color: var(--v-ink-3);
+  opacity: 0.6;
+  transition: transform 0.15s ease, opacity 0.15s ease;
+}
+
+.vitals-card:hover .vitals-card-chevron {
+  opacity: 1;
+  transform: translateX(2px);
+}
+
+.vitals-card-sub {
+  font-size: 11px;
+  color: var(--v-ink-2);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-bottom: 4px;
+}
+
+.vitals-card-figure {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+
+.figure-number {
+  font-size: 32px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--v-ink);
+  line-height: 1.1;
+  font-variant-numeric: tabular-nums;
+}
+
+.figure-unit {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--v-ink-2);
+}
+
+/* 3-stat sub row */
+.vitals-card-stats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  padding-top: 10px;
+  border-top: 1px solid rgba(255, 255, 255, 0.04);
+  margin-bottom: 10px;
+}
+
+.card-stat-item {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.card-stat-label {
+  font-size: 10px;
+  font-weight: 500;
+  color: var(--v-ink-3);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.card-stat-val {
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--v-ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Card Bottom Glow Sparkline */
+.vitals-card-sparkline {
+  position: relative;
+  width: 100%;
+  height: 38px;
+  margin-top: 2px;
+  overflow: visible;
+}
+
+.vitals-card-sparkline svg {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+/* Card Pulse Dot & Delta Badge */
+.card-pulse-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  display: inline-block;
+  margin-right: 5px;
+  animation: pulse-glow 2.5s infinite;
+}
+
+.card-pulse-dot.is-active {
+  background: #22c55e;
+  box-shadow: 0 0 6px #22c55e;
+}
+
+.card-pulse-dot.is-idle {
+  background: #fbbf24;
+  box-shadow: 0 0 5px rgba(251, 191, 36, 0.5);
+}
+
+.card-pulse-dot.is-offline {
+  background: #60606c;
+  box-shadow: none;
+}
+
+@keyframes pulse-glow {
+  0%, 100% { opacity: 0.85; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.18); }
+}
+
+.card-delta-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 1px 6px;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.card-delta-badge.is-positive {
+  background: rgba(34, 197, 94, 0.12);
+  color: #4ade80;
+}
+
+.card-delta-badge.is-neutral {
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--v-ink-2);
+}
+
+/* Sparkline Scrubber & Interactive Tooltip */
+.sparkline-tooltip {
+  position: absolute;
+  top: -22px;
+  transform: translateX(-50%);
+  background: rgba(24, 25, 28, 0.95);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 4px;
+  padding: 1px 6px;
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--v-ink);
+  font-family: var(--v-font-mono);
+  white-space: nowrap;
+  pointer-events: none;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+  z-index: 10;
+}
+
+.sparkline-scrubber-line {
+  stroke: rgba(255, 255, 255, 0.35);
+  stroke-width: 1;
+  stroke-dasharray: 2 2;
+}
+
+/* ==========================================================================
+   Worth a Look Section (Smart Feed)
+   ========================================================================== */
+.worth-a-look {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 18px 20px;
+  background: var(--v-card);
+  border: 1px solid var(--v-border);
+  border-radius: 14px;
+}
+
+.worth-filters {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  padding-bottom: 2px;
+}
+
+.worth-filters::-webkit-scrollbar {
+  display: none;
+}
+
+.worth-filter-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 9px;
+  border-radius: 6px;
+  border: 1px solid var(--v-border);
+  background: transparent;
+  color: var(--v-ink-3);
+  font-size: 11px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+
+.worth-filter-btn:hover {
+  color: var(--v-ink);
+  border-color: var(--v-border-hover);
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.worth-filter-btn.is-active {
+  color: var(--v-ink);
+  border-color: rgba(255, 255, 255, 0.2);
+  background: var(--v-card-hi);
+  font-weight: 600;
+}
+
+.worth-filter-count {
+  font-size: 9.5px;
+  padding: 1px 4px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--v-ink-2);
+}
+
+.worth-item.is-interactive {
+  cursor: pointer;
+}
+
+.worth-item.is-interactive:hover {
+  background: var(--v-card-hover);
+  border-color: var(--v-border-hover);
+  transform: translateY(-1px);
+}
+
+.worth-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.worth-title {
+  font-size: 13.5px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--v-ink);
+}
+
+.worth-show-all {
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--v-blue);
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+}
+
+.worth-show-all:hover {
+  text-decoration: underline;
+}
+
+.worth-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.worth-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  border-radius: 9px;
+  transition: background 0.15s ease;
+}
+
+.worth-item:hover {
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.worth-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 7px;
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--v-ink);
+  flex-shrink: 0;
+}
+
+.worth-copy {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.worth-desc {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--v-ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.worth-detail {
+  font-size: 10.5px;
+  color: var(--v-ink-2);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.worth-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.worth-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 7px;
+  border-radius: 5px;
+  font-size: 10px;
+  font-weight: 600;
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--v-ink-2);
+}
+
+.worth-pill.is-cpu { background: rgba(63, 134, 242, 0.15); color: #60a5fa; }
+.worth-pill.is-model { background: rgba(245, 158, 11, 0.15); color: #fbbf24; }
+.worth-pill.is-token { background: rgba(168, 85, 247, 0.15); color: #c084fc; }
+.worth-pill.is-storage { background: rgba(6, 182, 212, 0.15); color: #22d3ee; }
+
+.worth-time {
+  font-size: 10.5px;
+  color: var(--v-ink-3);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+/* ==========================================================================
+   Right Column: Deep-Dive Inspector
+   ========================================================================== */
+.vitals-right-col {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  position: sticky;
+  top: 74px;
+}
+
+.inspector-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 20px;
+  background: var(--v-card);
+  border: 1px solid var(--v-border);
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  animation: vitalsFadeSlide 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes vitalsFadeSlide {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Inspector Header */
+.inspector-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--v-border);
+}
+
+.inspector-identity {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.inspector-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: var(--v-card-hi);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: var(--v-ink);
+  flex-shrink: 0;
+}
+
+.inspector-titles {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.inspector-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--v-ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.inspector-subtitle {
+  font-size: 11.5px;
+  color: var(--v-ink-2);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* 4 Quick Stat Tiles */
+.inspector-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.inspector-stat-tile {
+  display: flex;
+  flex-direction: column;
+  padding: 12px 14px;
+  background: rgba(255, 255, 255, 0.025);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 10px;
+}
+
+.inspector-stat-tile span {
+  font-size: 10.5px;
+  font-weight: 500;
+  color: var(--v-ink-2);
+  margin-bottom: 4px;
+}
+
+.inspector-stat-tile strong {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--v-ink);
+  font-variant-numeric: tabular-nums;
+}
+
+.inspector-stat-tile small {
+  font-size: 10px;
+  color: var(--v-ink-3);
+  margin-top: 2px;
+}
+
+/* Multi-colored Segmented Bar */
+.breakdown-box {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 14px 16px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  border-radius: 10px;
+}
+
+.breakdown-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--v-ink);
+}
+
+.segmented-track {
+  display: flex;
+  width: 100%;
+  height: 8px;
+  border-radius: 999px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.segment-slice {
+  height: 100%;
+  transition: width 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Hierarchical Breakdown List */
+.breakdown-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.breakdown-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 11.5px;
+}
+
+.breakdown-row-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--v-ink);
+  font-weight: 500;
+}
+
+.breakdown-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+}
+
+.breakdown-row-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.breakdown-percent {
+  color: var(--v-ink-3);
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+}
+
+.breakdown-amount {
+  color: var(--v-ink);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Time Series Chart in Inspector */
+.inspector-chart-box {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.inspector-chart-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.inspector-chart-title {
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--v-ink);
+}
+
+.inspector-chart-scale {
+  font-size: 10.5px;
+  color: var(--v-ink-3);
+  font-variant-numeric: tabular-nums;
+}
+
+.inspector-chart-svg {
+  width: 100%;
+  height: 110px;
+  overflow: visible;
+}
+
+.inspector-chart-footer {
+  display: flex;
+  justify-content: space-between;
+  font-size: 9.5px;
+  color: var(--v-ink-3);
+  font-family: var(--v-font-mono);
+}
+
+/* Action Footer */
+.inspector-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding-top: 12px;
+  border-top: 1px solid var(--v-border);
+}
+
+.btn-vitals-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 7px 14px;
+  border-radius: 8px;
+  border: 0;
+  background: var(--v-blue);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.15s ease, transform 0.1s ease;
+}
+
+.btn-vitals-primary:hover {
+  opacity: 0.92;
+  transform: translateY(-0.5px);
+}
+
+.btn-vitals-quiet {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--v-border);
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--v-ink-2);
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btn-vitals-quiet:hover {
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--v-ink);
+  border-color: var(--v-border-hover);
+}
+
+/* ==========================================================================
+   Responsive Adaptations
+   ========================================================================== */
+@media (max-width: 1180px) {
+  .vitals-master-detail {
+    grid-template-columns: 1fr;
+  }
+  
+  .vitals-right-col {
+    position: static;
+  }
+}
+
+@media (max-width: 768px) {
+  .vitals-header {
+    height: auto;
+    padding: 12px 14px;
+    flex-wrap: wrap;
+  }
+  
+  .vitals-tabs {
+    order: 3;
+    width: 100%;
+    margin-top: 6px;
+  }
+  
+  .vitals-grid-6 {
+    grid-template-columns: 1fr;
+  }
+  
+  .brand-subtitle {
+    display: none;
+  }
+}
+
+/* ==========================================================================
+   Subview Harmonization (Details & Operations inside Vitals App)
+   ========================================================================== */
+.vitals-subview-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  width: 100%;
+}
+
+.vitals-app .detail-center {
+  padding: 0;
+  max-width: 100%;
+  background: transparent;
+}
+
+.vitals-app .operations-view,
+.vitals-app .operations-center {
+  padding: 0;
+  max-width: 100%;
+  background: transparent;
+}
+
+.vitals-app .panel,
+.vitals-app .detail-hero,
+.vitals-app .operations-header,
+.vitals-app .operations-controls,
+.vitals-app .operations-kpis {
+  background: var(--v-card) !important;
+  border: 1px solid var(--v-border) !important;
+  border-radius: 14px !important;
+}
+
+.vitals-app .data-warning {
+  margin-bottom: 16px;
+  padding: 10px 16px;
+  background: rgba(245, 158, 11, 0.1);
+  border: 1px solid rgba(245, 158, 11, 0.25);
+  border-radius: 10px;
+  color: #fbbf24;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+/* ==========================================================================
+   Inspector Sessions & Activity List
+   ========================================================================== */
+.inspector-session-box {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 14px 16px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  border-radius: 10px;
+}
+
+.inspector-session-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--v-ink);
+}
+
+.inspector-session-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.inspector-session-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 7px 10px;
+  background: rgba(255, 255, 255, 0.025);
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  border-radius: 7px;
+  transition: all 0.15s ease;
+}
+
+.inspector-session-item:hover {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+.session-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.session-badge {
+  font-family: var(--v-font-mono);
+  font-size: 10px;
+  font-weight: 600;
+  padding: 1px 5px;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.07);
+  color: var(--v-ink);
+  white-space: nowrap;
+}
+
+.session-meta {
+  font-size: 11px;
+  color: var(--v-ink-2);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.session-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.session-tokens {
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--v-ink);
+  font-variant-numeric: tabular-nums;
+}
+
+.session-share {
+  font-size: 10px;
+  color: var(--v-ink-3);
+  font-family: var(--v-font-mono);
+}
+
+/* ==========================================================================
+   24H Inspector Waveform Interactive Tooltip
+   ========================================================================== */
+.inspector-chart-container {
+  position: relative;
+  width: 100%;
+}
+
+.inspector-chart-tooltip {
+  position: absolute;
+  top: -24px;
+  transform: translateX(-50%);
+  background: rgba(20, 21, 24, 0.95);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 5px;
+  padding: 3px 8px;
+  font-size: 10.5px;
+  font-weight: 600;
+  color: #ffffff;
+  font-family: var(--v-font-mono);
+  white-space: nowrap;
+  pointer-events: none;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.5);
+  z-index: 20;
+}
+
+/* ==========================================================================
+   Subview Harmonization — 100% Vitals Specification
+   Operations Center (Requests) & Detail Views (Ollama / Codex / Antigravity / Hardware)
+   ========================================================================== */
+
+.vitals-subview-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  width: 100%;
+  max-width: 1680px;
+  margin: 0 auto;
+}
+
+.vitals-view-anim {
+  animation: vitalsFadeIn 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes vitalsFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Base Panel & Card Overrides */
+.vitals-app .panel,
+.vitals-app .detail-hero,
+.vitals-app .ops-panel,
+.vitals-app .ops-filters,
+.vitals-app .ops-intro,
+.vitals-app .accounting-strip,
+.vitals-app .codex-ledger-panel,
+.vitals-app .telemetry-panel,
+.vitals-app .signals-panel {
+  background: var(--v-card) !important;
+  border: 1px solid var(--v-border) !important;
+  border-radius: 14px !important;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2) !important;
+}
+
+/* ==========================================================================
+   Operations Center (Requests) — Full Vitals Styling
+   ========================================================================== */
+.vitals-app .operations-center {
+  padding: 0 !important;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+/* Intro Header */
+.vitals-app .ops-intro {
+  padding: 20px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.vitals-app .ops-eyebrow {
+  font-family: var(--v-font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--v-cyan);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.vitals-app .ops-intro h1 {
+  font-family: var(--v-font-sans);
+  font-size: 24px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--v-ink);
+  margin: 4px 0 6px;
+}
+
+.vitals-app .ops-intro p {
+  font-size: 13px;
+  color: var(--v-ink-2);
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* Source notice badge */
+.vitals-app .ops-source {
+  margin: -6px 0 0;
+  padding: 10px 16px;
+  background: rgba(6, 182, 212, 0.05);
+  border: 1px solid rgba(6, 182, 212, 0.15);
+  border-left: 3px solid var(--v-cyan);
+  border-radius: 8px;
+  color: var(--v-ink-2);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+/* Filter Bar */
+.vitals-app .ops-filters {
+  padding: 16px 20px;
+  display: flex;
+  align-items: flex-end;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.vitals-app .ops-filters label {
+  min-width: 160px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 11.5px;
+  font-weight: 500;
+  color: var(--v-ink-2);
+}
+
+.vitals-app .ops-filters .ops-search {
+  flex: 1;
+  min-width: 220px;
+}
+
+/* macOS Style Select & Search Controls */
+.vitals-app .ops-filters select,
+.vitals-app .ops-filters input,
+.vitals-app .ops-pagination select {
+  box-sizing: border-box;
+  width: 100%;
+  height: 36px;
+  border-radius: 8px;
+  padding: 0 12px;
+  background-color: #121316;
+  color: var(--v-ink);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  font-family: var(--v-font-sans);
+  font-size: 12.5px;
+  transition: all 0.15s ease;
+}
+
+.vitals-app .ops-filters select,
+.vitals-app .ops-pagination select {
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%239898a4' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  padding-right: 30px;
+  cursor: pointer;
+}
+
+.vitals-app .ops-filters select:hover,
+.vitals-app .ops-filters input:hover,
+.vitals-app .ops-pagination select:hover {
+  border-color: rgba(255, 255, 255, 0.18);
+  background-color: #15161a;
+}
+
+.vitals-app .ops-filters select:focus-visible,
+.vitals-app .ops-filters input:focus-visible,
+.vitals-app .ops-pagination select:focus-visible {
+  outline: none;
+  border-color: var(--v-cyan);
+  box-shadow: 0 0 0 2px rgba(6, 182, 212, 0.22);
+}
+
+.vitals-app .ops-filters input::placeholder {
+  color: var(--v-ink-muted);
+}
+
+/* Buttons */
+.vitals-app .ops-button {
+  min-height: 36px;
+  padding: 0 15px;
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--v-ink);
+  font-family: var(--v-font-sans);
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  transition: all 0.15s ease;
+}
+
+.vitals-app .ops-button:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.09);
+  border-color: rgba(255, 255, 255, 0.18);
+  color: #ffffff;
+}
+
+.vitals-app .ops-button.primary {
+  background: var(--v-cyan);
+  color: #081118;
+  border-color: var(--v-cyan);
+  font-weight: 600;
+  box-shadow: 0 2px 8px rgba(6, 182, 212, 0.3);
+}
+
+.vitals-app .ops-button.primary:hover:not(:disabled) {
+  filter: brightness(1.1);
+  box-shadow: 0 4px 14px rgba(6, 182, 212, 0.45);
+}
+
+.vitals-app .ops-button:disabled,
+.vitals-app .ops-button[aria-disabled="true"] {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+/* 4 KPIs Matrix */
+.vitals-app .ops-kpis {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.vitals-app .ops-kpis article {
+  padding: 18px 20px;
+  border-radius: 14px;
+  background: var(--v-card);
+  border: 1px solid var(--v-border);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.vitals-app .ops-kpis article:hover {
+  background: var(--v-card-hover);
+  border-color: var(--v-border-hover);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+}
+
+.vitals-app .ops-kpis article > span {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--v-ink-3);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.vitals-app .ops-kpis strong {
+  font-family: var(--v-font-mono);
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--v-ink);
+  letter-spacing: -0.03em;
+  line-height: 1.15;
+}
+
+.vitals-app .ops-green {
+  color: #4ade80 !important;
+}
+
+.vitals-app .ops-kpis small {
+  margin-top: auto;
+  font-size: 11px;
+  color: var(--v-ink-2);
+  line-height: 1.5;
+}
+
+/* Analysis Grid (Daily & Rankings) */
+.vitals-app .ops-analysis-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.45fr) minmax(0, 1fr);
+  gap: 16px;
+}
+
+.vitals-app .ops-heading {
+  min-height: 54px;
+  padding: 14px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--v-border);
+  background: rgba(255, 255, 255, 0.015);
+}
+
+.vitals-app .ops-heading h2 {
+  font-family: var(--v-font-sans);
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--v-ink);
+  margin: 0;
+}
+
+.vitals-app .ops-heading > span,
+.vitals-app .ops-heading p {
+  font-size: 11px;
+  color: var(--v-ink-3);
+  margin: 3px 0 0;
+}
+
+.vitals-app .ops-legend {
+  display: flex;
+  gap: 20px;
+  margin: 16px 20px;
+  font-size: 12px;
+  color: var(--v-ink-2);
+}
+
+.vitals-app .ops-legend span::before {
+  content: "";
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  margin-right: 6px;
+  border-radius: 2px;
+}
+
+.vitals-app .ops-legend .input::before,
+.vitals-app .ops-stack .input {
+  background: var(--v-cyan);
+}
+
+.vitals-app .ops-legend .output::before,
+.vitals-app .ops-stack .output {
+  background: var(--v-purple);
+}
+
+.vitals-app .ops-bars {
+  height: 200px;
+  padding: 0 20px 18px;
+}
+
+.vitals-app .ops-stack {
+  border-bottom: 1px solid var(--v-border);
+  background: linear-gradient(to top, transparent 49.5%, rgba(255,255,255,0.03) 50%, transparent 50.5%);
+  border-radius: 3px 3px 0 0;
+}
+
+.vitals-app .ops-rankings {
+  max-height: 270px;
+  padding: 6px 20px;
+}
+
+.vitals-app .ops-rank {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  padding: 12px 0;
+}
+
+.vitals-app .ops-rank-title strong {
+  font-size: 12.5px;
+  color: var(--v-ink);
+}
+
+.vitals-app .ops-rank-title > span {
+  font-family: var(--v-font-mono);
+  font-size: 12px;
+  color: var(--v-cyan);
+}
+
+.vitals-app .ops-rank meter::-webkit-meter-bar {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 999px;
+  border: none;
+}
+
+.vitals-app .ops-rank meter::-webkit-meter-optimum-value {
+  background: linear-gradient(90deg, var(--v-cyan), #38bdf8);
+  border-radius: 999px;
+}
+
+/* Operations Table */
+.vitals-app .ops-table-scroll {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.vitals-app .ops-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.vitals-app .ops-table th {
+  background: rgba(255, 255, 255, 0.02) !important;
+  color: var(--v-ink-2) !important;
+  font-size: 11px !important;
+  font-weight: 600 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.04em !important;
+  border-bottom: 1px solid var(--v-border) !important;
+  padding: 12px 18px !important;
+}
+
+.vitals-app .ops-table td {
+  font-family: var(--v-font-mono) !important;
+  font-size: 12px !important;
+  color: var(--v-ink) !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04) !important;
+  padding: 12px 18px !important;
+}
+
+.vitals-app .ops-table tr:hover > td {
+  background: rgba(255, 255, 255, 0.03) !important;
+}
+
+.vitals-app .ops-status {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-family: var(--v-font-sans);
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.vitals-app .ops-status.completed {
+  background: rgba(34, 197, 94, 0.12);
+  color: #4ade80;
+  border: 1px solid rgba(34, 197, 94, 0.25);
+}
+
+.vitals-app .ops-status.failed {
+  background: rgba(239, 68, 68, 0.12);
+  color: #f87171;
+  border: 1px solid rgba(239, 68, 68, 0.25);
+}
+
+.vitals-app .ops-status.cancelled {
+  background: rgba(245, 158, 11, 0.12);
+  color: #fbbf24;
+  border: 1px solid rgba(245, 158, 11, 0.25);
+}
+
+.vitals-app .ops-text-button {
+  color: var(--v-cyan);
+  font-weight: 500;
+}
+
+.vitals-app .ops-request-detail {
+  background: #121316;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 10px;
+  padding: 16px 20px;
+}
+
+.vitals-app .ops-pagination {
+  padding: 14px 20px;
+  border-top: 1px solid var(--v-border);
+}
+
+/* ==========================================================================
+   Detail Views (Ollama, Codex, Antigravity, Hardware) — 100% Vitals Harmonization
+   ========================================================================== */
+.vitals-app .detail-hero {
+  padding: 24px 28px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+}
+
+.vitals-app .detail-hero-copy {
+  flex: 1;
+  min-width: 0;
+}
+
+.vitals-app .detail-hero-heading {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.vitals-app .detail-hero-heading .eyeline {
+  font-family: var(--v-font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--v-cyan);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.vitals-app .detail-hero h1 {
+  font-family: var(--v-font-sans);
+  font-size: 26px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  margin: 0 0 6px;
+  color: var(--v-ink);
+}
+
+.vitals-app .detail-hero p {
+  font-size: 13px;
+  color: var(--v-ink-2);
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* Proxy Card / Badge */
+.vitals-app .proxy-card {
+  min-width: 260px;
+  background: rgba(255, 255, 255, 0.025) !important;
+  border: 1px solid rgba(255, 255, 255, 0.06) !important;
+  border-left: 3px solid var(--v-cyan) !important;
+  border-radius: 12px !important;
+  padding: 14px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.detail-center-codex .proxy-card {
+  border-left-color: var(--v-purple) !important;
+}
+
+.detail-center-antigravity .proxy-card {
+  border-left-color: var(--v-amber) !important;
+}
+
+.vitals-app .proxy-card .eyeline {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--v-ink-3);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.vitals-app .proxy-card code {
+  font-family: var(--v-font-mono);
+  font-size: 12px;
+  color: var(--v-ink);
+  background: rgba(0, 0, 0, 0.35);
+  padding: 3px 7px;
+  border-radius: 5px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  width: fit-content;
+}
+
+.vitals-app .proxy-card strong {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--v-ink);
+}
+
+.vitals-app .proxy-card small {
+  font-size: 11px;
+  color: var(--v-ink-3);
+}
+
+/* Accounting Strip (Daily Reconciliation) */
+.vitals-app .accounting-strip {
+  padding: 20px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.vitals-app .accounting-strip > div {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.vitals-app .accounting-strip > div > span {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--v-ink);
+}
+
+.vitals-app .accounting-strip .is-balanced {
+  color: #4ade80 !important;
+  background: rgba(34, 197, 94, 0.12) !important;
+  border: 1px solid rgba(34, 197, 94, 0.25) !important;
+  border-radius: 999px !important;
+  padding: 3px 10px !important;
+  font-size: 11px !important;
+  font-weight: 600 !important;
+}
+
+.vitals-app .accounting-strip .is-pending {
+  color: #fbbf24 !important;
+  background: rgba(245, 158, 11, 0.12) !important;
+  border: 1px solid rgba(245, 158, 11, 0.25) !important;
+  border-radius: 999px !important;
+  padding: 3px 10px !important;
+  font-size: 11px !important;
+  font-weight: 600 !important;
+}
+
+.vitals-app .accounting-strip dl {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+  background: transparent !important;
+  margin: 6px 0;
+}
+
+.vitals-app .accounting-strip dl > div {
+  background: rgba(255, 255, 255, 0.025);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 10px;
+  padding: 12px 16px;
+}
+
+.vitals-app .accounting-strip dt {
+  font-size: 10.5px;
+  font-weight: 500;
+  color: var(--v-ink-3);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 6px;
+}
+
+.vitals-app .accounting-strip dd {
+  margin: 0;
+  font-family: var(--v-font-mono);
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--v-ink);
+}
+
+/* Metric Grid */
+.vitals-app .detail-metric-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 12px;
+}
+
+.vitals-app .detail-metric {
+  padding: 18px 20px;
+  border-radius: 14px;
+  background: var(--v-card);
+  border: 1px solid var(--v-border);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.vitals-app .detail-metric:hover {
+  background: var(--v-card-hover);
+  border-color: var(--v-border-hover);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+}
+
+.vitals-app .detail-metric span {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--v-ink-3);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.vitals-app .detail-metric strong {
+  font-family: var(--v-font-mono);
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--v-ink);
+  letter-spacing: -0.02em;
+}
+
+.vitals-app .detail-metric small {
+  font-size: 11px;
+  color: var(--v-ink-2);
+}
+
+/* Hardware Trends Grid */
+.vitals-app .hardware-trend-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 12px;
+}
+
+.vitals-app .hardware-trend {
+  padding: 18px 20px;
+  border-radius: 14px;
+  background: var(--v-card);
+  border: 1px solid var(--v-border);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.vitals-app .hardware-trend:hover {
+  background: var(--v-card-hover);
+  border-color: var(--v-border-hover);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+}
+
+.vitals-app .hardware-trend span {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--v-ink-3);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.vitals-app .hardware-trend strong {
+  font-family: var(--v-font-mono);
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--v-ink);
+}
+
+/* Codex Analytics Ledger Panel */
+.vitals-app .codex-ledger-panel {
+  padding: 22px 24px;
+}
+
+.vitals-app .codex-ledger-panel .codex-ledger-subpanel {
+  background: rgba(255, 255, 255, 0.02) !important;
+  border: 1px solid rgba(255, 255, 255, 0.05) !important;
+  border-radius: 10px !important;
+}
+
+.vitals-app .ledger-rank-row {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.vitals-app .ledger-rank-track {
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 999px;
+}
+
+.vitals-app .ledger-rank-track span {
+  background: linear-gradient(90deg, var(--v-purple), #c084fc);
+  border-radius: 999px;
+}
+
+/* Telemetry & Signals Panels */
+.vitals-app .telemetry-panel,
+.vitals-app .signals-panel {
+  overflow: hidden;
+}
+
+.vitals-app .telemetry-grid .gauge-cell {
+  background: rgba(255, 255, 255, 0.02) !important;
+  border: 1px solid rgba(255, 255, 255, 0.04) !important;
+  border-radius: 10px !important;
+}
+
+.vitals-app .signals-scroll table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.vitals-app .signals-scroll th {
+  background: rgba(255, 255, 255, 0.02);
+  color: var(--v-ink-2);
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--v-border);
+}
+
+.vitals-app .signals-scroll td {
+  padding: 10px 16px;
+  font-size: 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  color: var(--v-ink);
+}
+
+.vitals-app .signals-scroll tr:hover td {
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.vitals-app .detail-content-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(360px, 1fr);
+  gap: 16px;
+}
+
+@media (max-width: 1024px) {
+  .vitals-app .detail-content-grid {
+    grid-template-columns: 1fr;
+  }
+  .vitals-app .ops-analysis-grid {
+    grid-template-columns: 1fr;
+  }
+  .vitals-app .ops-kpis {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .vitals-app .ops-kpis {
+    grid-template-columns: 1fr;
+  }
+  .vitals-app .accounting-strip dl {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* ==========================================================================
+   Micro Breadcrumb Navigation & AI Inference Active Badge
+   ========================================================================== */
+.vitals-breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  font-family: var(--v-mono);
+  margin-bottom: 2px;
+  color: var(--v-text-muted);
+}
+
+.vitals-breadcrumb .breadcrumb-btn {
+  background: none;
+  border: none;
+  padding: 2px 6px;
+  border-radius: 4px;
+  color: var(--v-cyan);
+  font: inherit;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  transition: all 0.2s ease;
+}
+
+.vitals-breadcrumb .breadcrumb-btn:hover {
+  background: rgba(6, 182, 212, 0.12);
+  color: #fff;
+  text-shadow: 0 0 8px rgba(6, 182, 212, 0.5);
+}
+
+.vitals-breadcrumb .breadcrumb-sep {
+  color: var(--v-text-dim);
+  user-select: none;
+}
+
+.vitals-breadcrumb .breadcrumb-curr {
+  color: var(--v-text-main);
+  font-weight: 500;
+}
+
+/* 跨维度联动：AI 推理活跃微标 */
+.badge-inference-active {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 10px;
+  font-family: var(--v-mono);
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  padding: 2px 7px;
+  border-radius: 4px;
+  background: rgba(245, 158, 11, 0.12);
+  border: 1px solid rgba(245, 158, 11, 0.35);
+  color: #fbbf24;
+  box-shadow: 0 0 10px rgba(245, 158, 11, 0.2);
+  animation: pulseInference 2s ease-in-out infinite;
+}
+
+@keyframes pulseInference {
+  0%, 100% {
+    box-shadow: 0 0 8px rgba(245, 158, 11, 0.2);
+    border-color: rgba(245, 158, 11, 0.35);
+  }
+  50% {
+    box-shadow: 0 0 16px rgba(245, 158, 11, 0.45);
+    border-color: rgba(245, 158, 11, 0.65);
+  }
+}
+
