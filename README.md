@@ -158,7 +158,6 @@ npm run build
 1. Codex 独立持久化账本、模型与工作区使用排行。
 2. 代理端到端延迟、首 Token 时间与告警规则。
 3. AMD 温度/功耗 Provider 与 Collector 插件注册机制。
-4. Windows 安装包、后台常驻与自启动管理（已有一键启动脚本）。
 
 ## 请求分析
 
