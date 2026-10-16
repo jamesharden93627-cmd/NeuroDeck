@@ -1,6 +1,6 @@
 # NeuroDeck
 
-NeuroDeck 是一个本地优先的 AI Observability & Command Center。当前纵向切片已经可以把 Codex、Ollama 和本机硬件状态统一展示在一个 React NOC 主屏中。
+NeuroDeck 是一个本地优先的 AI Observability & Command Center。当前纵向切片已经可以把 Codex、Antigravity、Ollama 和本机硬件状态统一展示在一个 React NOC 主屏中。
 
 ## 当前能力
 
